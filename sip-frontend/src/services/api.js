@@ -1,7 +1,9 @@
 import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 
 const API = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: process.env.BACKEND_URL,
 });
 
 export const getNextSIPDate = async (data) =>
