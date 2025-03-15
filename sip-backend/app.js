@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
+const allowedOrigin = process.env.FRONTEND_URL.replace(/\/$/, "") || "http://localhost:5173";
 dotenv.config();
 app.use(cors({
     origin: allowedOrigin,
