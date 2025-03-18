@@ -66,10 +66,24 @@ const getinstalment_date = async (req, res) => {
     while (instalment_date < txn_date) {
       if (freq == "weekly")
         instalment_date.setDate(instalment_date.getDate() + 7);
-      else if (freq == "monthly")
+      else if (freq == "monthly"){
+        let prev_day = instalment_date.getDate();
         instalment_date.setMonth(instalment_date.getMonth() + 1);
-      else if (freq == "yearly")
+        
+        if(instalment_date.getDate() != prev_day){
+          instalment_date.setDate(0);
+        }
+      }
+      else if (freq == "yearly"){
+        let prev_day = instalment_date.getDate();
+        let prev_month = instalment_date.getMonth();
         instalment_date.setFullYear(instalment_date.getFullYear() + 1);
+        
+        if(prev_month == 1 && prev_day == 29 && instalment_date.getDate() != 29){
+          instalment_date.setDate(28);
+        }
+
+      }
       else return res.status(400).json({ message: "Invalid frequency" });
     }
 

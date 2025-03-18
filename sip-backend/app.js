@@ -22,9 +22,9 @@ app.use("/holidays", holidayRoutes);
 app.use("/sip", sipRoutes);
 
 // Removed for Vercel
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
-})
+// app.listen(process.env.PORT, () => {
+//     console.log(`Server is running on port ${process.env.PORT}`);
+// })
 
-// module.exports = app; 
+module.exports = app; 
 
