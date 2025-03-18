@@ -69,7 +69,10 @@ const AddHoliday = () => {
             <h3 className="text-lg font-semibold">Added Holidays:</h3>
             <ul className="mt-2 space-y-1">
               {holidays.map((date, index) => (
-                <li key={index} className="flex justify-between items-center bg-gray-200 p-2 rounded-lg">
+                <li
+                  key={index}
+                  className="flex justify-between items-center bg-gray-200 p-2 rounded-lg"
+                >
                   {date}
                   <button
                     onClick={() => handleRemoveHoliday(date)}
