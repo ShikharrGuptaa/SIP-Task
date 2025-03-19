@@ -9,12 +9,15 @@ const isNotValid = (date, allHolidays) => {
   return allHolidays.has(date.toISOString().split("T")[0]);
 };
 
+const isLeapYear = (year) => (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0));
+
 const getNextSIPDate = async (req, res) => {
   try {
     const { startDate, frequency, referenceDate } = req.query;
     if (!startDate || !frequency || !referenceDate) {
       return res.status(400).json({ message: "Missing fields" });
     }
+
     let freq = frequency.toLowerCase();
     let next_date = new Date(startDate);
     let ref_date = new Date(referenceDate);
@@ -25,26 +28,40 @@ const getNextSIPDate = async (req, res) => {
       )
     );
 
-    while (next_date <= ref_date) {
-      if (freq == "weekly") next_date.setDate(next_date.getDate() + 7);
-      else if (freq == "monthly") next_date.setMonth(next_date.getMonth() + 1);
-      else if (freq == "yearly")
+    if (next_date.getMonth() === 1 && next_date.getDate() === 29 && freq === "yearly") {
+      while (next_date.getFullYear() <= ref_date.getFullYear()) {
         next_date.setFullYear(next_date.getFullYear() + 1);
-      else return res.status(400).json({ message: "Invalid frequency" });
+
+        if (isLeapYear(next_date.getFullYear())) {
+          next_date.setMonth(1, 29);
+        } else {
+          next_date.setMonth(1, 28);
+        }
+
+        if (next_date.getFullYear() >= ref_date.getFullYear()) {
+          break;
+        }
+      }
+    } else {
+      while (next_date <= ref_date) {
+        if (freq === "weekly") next_date.setDate(next_date.getDate() + 7);
+        else if (freq === "monthly") next_date.setMonth(next_date.getMonth() + 1);
+        else if (freq === "yearly") next_date.setFullYear(next_date.getFullYear() + 1);
+        else return res.status(400).json({ message: "Invalid frequency" });
+      }
     }
 
     while (isNotValid(next_date, allHolidays)) {
       next_date.setDate(next_date.getDate() + 1);
     }
 
-    return res
-      .status(200)
-      .json({ next_SIP_Date: next_date.toISOString().split("T")[0] });
+    return res.status(200).json({ next_SIP_Date: next_date.toISOString().split("T")[0] });
   } catch (err) {
     console.error("Error getting next SIP date", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const getinstalment_date = async (req, res) => {
   try {
